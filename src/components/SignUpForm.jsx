@@ -6,8 +6,10 @@ const SignUpSchema = Yup.object({
   firstName: Yup.string().required("First Name cannot be empty"),
   lastName: Yup.string().required("Last Name cannot be empty"),
   email: Yup.string()
-    .matches(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/, "Looks like this is not an email")
+    .email("Looks like this is not an email")
     .required("Email cannot be empty"),
+  // .matches(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/, "Looks like this is not an email")
+
   password: Yup.string()
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
@@ -26,8 +28,15 @@ const SignUpForm = () => {
       }}
       validationSchema={SignUpSchema}
       validateOnMount={true}
+      onSubmit={async (values, actions) => {
+        console.log(values);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        actions.resetForm();
+        actions.setSubmitting(false);
+        console.log(actions);
+      }}
     >
-      {({ isValid }) => (
+      {({ isValid, isSubmitting }) => (
         <Form className="bg-white rounded-lg px-8 pt-8 pb-5 flex flex-col gap-2">
           <InputFeild type="text" name="firstName" placeholder="First Name" />
           <InputFeild type="text" name="lastName" placeholder="Last Name" />
@@ -36,7 +45,9 @@ const SignUpForm = () => {
           <button
             type="submit"
             disabled={!isValid}
-            className="bg-green text-white p-5 rounded-lg hover:opacity-50 transition"
+            className={`bg-green text-white p-5 rounded-lg hover:opacity-50 ${
+              isSubmitting && "opacity-50"
+            }  transition`}
           >
             CLAIM YOUR FREE TRIAL
           </button>
